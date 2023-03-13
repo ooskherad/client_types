@@ -22,5 +22,5 @@ func main() {
 	if err != nil {
 		println(err.Error())
 	}
-	helper.Job(helper.JobTime{H: 00, M: 11, S: 00}, helper.JobTime{H: 00, M: 11, S: 10}, 3*time.Second, client_type_services.GetAndSaveInDb)
+	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 30, S: 00}, 3*time.Second, client_type_services.GetAndSaveInDb)
 }
