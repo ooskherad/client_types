@@ -22,7 +22,5 @@ func main() {
 	if err != nil {
 		println(err.Error())
 	}
-
-	client_type_services.GetAndSaveInDb()
 	helper.Job(helper.JobTime{H: 00, M: 11, S: 00}, helper.JobTime{H: 00, M: 11, S: 10}, 3*time.Second, client_type_services.GetAndSaveInDb)
 }
