@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"stock/helper"
 	"stock/models"
-	"stock/services/client_type_services"
 	"stock/services/database"
+	"stock/workers/client_type_worker"
 	"time"
 )
 
@@ -18,9 +18,11 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	err = con.AutoMigrate(&models.Stock{}, &models.ClientType{})
+	err = con.AutoMigrate(&models.Stock{}, &models.ClientType{}, &models.InputData{})
 	if err != nil {
 		println(err.Error())
 	}
-	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 30, S: 00}, 3*time.Second, client_type_services.GetAndSaveInDb)
+
+	go helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 30, S: 00}, 1*time.Minute, client_type_worker.SaveClientTypes)
+	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 30, S: 00}, 3*time.Second, client_type_worker.SaveClientTypeInInputData)
 }

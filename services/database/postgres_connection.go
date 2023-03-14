@@ -31,10 +31,7 @@ func CreateDBConnection() error {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  GetDSN(),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
-	}), &gorm.Config{NowFunc: func() time.Time {
-		utc, _ := time.LoadLocation("Asia/Tehran")
-		return time.Now().In(utc)
-	}})
+	}))
 
 	if err != nil {
 		log.Println("Error occurred while connecting with the database")
