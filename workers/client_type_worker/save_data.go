@@ -8,7 +8,7 @@ import (
 
 func SaveClientTypes(noInput ...interface{}) {
 	var clientTypesData []models.InputData
-	models.InputData{}.DB().Where("status = ? and data_type = ?", 1, 11).Find(&clientTypesData)
+	models.InputData{}.DB().Where("status = ? and data_type = ?", 1, 11).Order("created_at").Find(&clientTypesData)
 	if len(clientTypesData) == 0 {
 		return
 	}
@@ -20,14 +20,18 @@ func SaveClientTypes(noInput ...interface{}) {
 		find := false
 		data := models.ClientType{}
 		_ = json.Unmarshal(clientTypeItem.Data, &data)
+		data.CreatedAt = clientTypeItem.CreatedAt
 		clientTypeItem.Status = 2
 		clientTypeItem.VerifyAt = time.Now()
 
-		for _, lastClientType := range lastClientTypeInDb {
+		for i, lastClientType := range lastClientTypeInDb {
 			if data.StockId == lastClientType.StockId {
-				if data.NumberOfRealInBuy != lastClientType.NumberOfRealInBuy ||
-					data.NumberOfLegalInBuy != lastClientType.NumberOfLegalInBuy {
+				if data.NumberOfRealInBuy > lastClientType.NumberOfRealInBuy ||
+					data.NumberOfLegalInBuy > lastClientType.NumberOfLegalInBuy ||
+					data.NumberOfLegalInSell > lastClientType.NumberOfLegalInSell ||
+					data.NumberOfRealInSell > lastClientType.NumberOfRealInSell {
 					clientTypeToSave = append(clientTypeToSave, data)
+					lastClientTypeInDb[i] = data
 				}
 				find = true
 				break
@@ -36,6 +40,7 @@ func SaveClientTypes(noInput ...interface{}) {
 		}
 		if !find {
 			clientTypeToSave = append(clientTypeToSave, data)
+			lastClientTypeInDb = append(lastClientTypeInDb, data)
 		}
 	}
 	if len(clientTypeToSave) != 0 {

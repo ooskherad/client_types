@@ -31,6 +31,5 @@ func (model InputData) BulkUpdateVerifyStatus(models []InputData) {
 	for _, inputData := range models {
 		ids = append(ids, inputData.Id)
 	}
-	err := model.DB().Model(model).Where("id in ?", ids).UpdateColumn("status", 2).Error
-	println(err)
+	model.DB().Model(model).Where("id in ?", ids).UpdateColumn("status", 2)
 }
