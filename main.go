@@ -23,9 +23,8 @@ func main() {
 	if err != nil {
 		println(err.Error())
 	}
-	market_watch_worker.SaveMarketWatchData()
 
-	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 3*time.Second, market_watch_worker.SaveMarketWatchData)
-	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 30*time.Second, client_type_worker.SaveClientTypes)
+	go helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 3*time.Second, market_watch_worker.SaveMarketWatchData)
+	go helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 30*time.Second, client_type_worker.SaveClientTypes)
 	helper.Job(helper.JobTime{H: 9, M: 00, S: 00}, helper.JobTime{H: 12, M: 30, S: 00}, 2*time.Second, client_type_worker.SaveClientTypeInInputData)
 }
