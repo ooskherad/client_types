@@ -1,7 +1,8 @@
-package market_watch_service
+package market_watch
 
 import (
-	"github.com/ooskherad/tabango/core/services/http_connection"
+	"stock/services/http"
+	"time"
 )
 
 const (
@@ -19,7 +20,7 @@ type MarketWatchModel struct {
 	StockPrices StockPrices
 }
 type StockPrices struct {
-	Time               string
+	Time               time.Time
 	PriceFirst         int
 	PriceMin           int
 	PriceMax           int
@@ -38,13 +39,11 @@ type StockInfo struct {
 	NameFa            string
 	SymbolDigitCode12 string
 	SymbolName        string
-	TotalStockNumber  string
+	TotalStockNumber  int64
 	IndustryGroupCode string
-	MonthAverage      float32
-	CloselyHeldShare  float32
+	MonthAverage      int64
 	EPS               int
 	PE                float32
-	PS                float32
 	BaseVolume        int
 }
 
@@ -78,10 +77,8 @@ type OrderItems struct {
 	IsInAuthorizedRange bool
 }
 
-func GetMarketWatch() bool {
-	http_connection.GetAndDo([]string{MarketWatchUrl}, "http://www.tsetmc.com", func(result http_connection.RespModel) {
-		MarketWatchString = string(result.Resp)
-	})
+func GetMarketWatch() map[string]MarketWatchModel {
+	MarketWatchString, _ = http.GetAndString(MarketWatchUrl)
 	modelMarketWatch(splitMarketWatch())
-	return true
+	return MarketWatchData
 }

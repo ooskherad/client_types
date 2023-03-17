@@ -67,6 +67,13 @@ func FillStruct(m map[string]interface{}, s interface{}) error {
 	return nil
 }
 
+func FloatStringToInt(input string) int {
+	return int(StringToFloat32(input))
+}
+func StringToFloat32(input string) float32 {
+	return float32(val(strconv.ParseFloat(input, 32)))
+}
+
 func StructToList(model interface{}) []interface{} {
 	r := reflect.ValueOf(model)
 	values := make([]interface{}, r.NumField())

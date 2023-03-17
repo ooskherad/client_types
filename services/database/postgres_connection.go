@@ -19,7 +19,7 @@ func init() {
 	user = "postgres"
 	password = "1234"
 	db = "postgres"
-	host = "192.168.1.10"
+	host = "192.168.1.9"
 	port = "1234"
 }
 

@@ -1,10 +1,15 @@
-package market_watch_service
+package market_watch
 
 import (
-	"github.com/ooskherad/tabango/core/helper"
+	"github.com/spf13/cast"
 	"sort"
+	"stock/helper"
 	"strings"
+	"time"
+	"unicode/utf8"
 )
+
+var y, m, d = time.Now().Date()
 
 func splitMarketWatch() (info [][]string, orders [][]string) {
 	if MarketWatchString == "" {
@@ -35,12 +40,11 @@ func modelMarketWatch(splitInfo [][]string, splitOrders [][]string) {
 			//, MonthAverage: QTotTran5JAvg
 			//KAjCapValCpsIdx= سهام شناور
 			SymbolDigitCode12: splitInfo[i][1], SymbolName: splitInfo[i][2], NameFa: splitInfo[i][3],
-			EPS: helper.StringToInt(splitInfo[i][14]), PS: 0, BaseVolume: helper.StringToInt(splitInfo[i][15]),
-			IndustryGroupCode: splitInfo[i][18], CloselyHeldShare: 0,
-			TotalStockNumber: splitInfo[i][21]}
+			EPS: helper.StringToInt(splitInfo[i][14]), BaseVolume: helper.StringToInt(splitInfo[i][15]),
+			IndustryGroupCode: splitInfo[i][18], TotalStockNumber: cast.ToInt64(splitInfo[i][21])}
 
 		price := StockPrices{
-			Time: splitInfo[i][4], PriceFirst: helper.StringToInt(splitInfo[i][5]),
+			Time: convertStringToTile(splitInfo[i][4]), PriceFirst: helper.StringToInt(splitInfo[i][5]),
 			PriceLast: helper.StringToInt(splitInfo[i][7]), PriceClose: helper.StringToInt(splitInfo[i][6]),
 			TransactionCount: helper.StringToInt(splitInfo[i][8]), TransactionVolume: helper.StringToInt(splitInfo[i][9]), TransactionValue: helper.StringToInt(splitInfo[i][10]),
 			PriceMin: helper.StringToInt(splitInfo[i][11]), PriceMax: helper.StringToInt(splitInfo[i][12]),
@@ -109,7 +113,6 @@ func modelMarketWatch(splitInfo [][]string, splitOrders [][]string) {
 		marketWatchData[splitOrders[i][0]] = stockMarketWatchData
 
 	}
-	//marketWatchData[i].
 
 	// calculate Orders data
 	for identifier, stockMarketWatchData := range marketWatchData {
@@ -157,6 +160,14 @@ func modelMarketWatch(splitInfo [][]string, splitOrders [][]string) {
 		marketWatchData[identifier] = stockMarketWatchData
 	}
 	MarketWatchData = marketWatchData
+}
+
+func convertStringToTile(stringTime string) time.Time {
+	le := utf8.RuneCountInString(stringTime) - 1
+	hour := cast.ToInt(stringTime[:le-3])
+	minute := cast.ToInt(stringTime[le-3 : le-1])
+	second := cast.ToInt(stringTime[le-1:])
+	return time.Date(y, time.Month(m), d, hour, minute, second, 0, helper.GetIranTimeZone())
 }
 
 func FindStockInMarketWatch(identifier string) MarketWatchModel {

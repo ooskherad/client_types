@@ -1,8 +1,13 @@
 package models
 
+import (
+	"gorm.io/gorm"
+	"log"
+	"stock/services/database"
+)
+
 type Stock struct {
 	ID                   uint   `gorm:"primarykey, AUTO_INCREMENT"`
-	Identifier           string `json:"identifier"`
 	NameFa               string `json:"name_fa" gorm:"type:varchar(40); unique_index"`
 	NameEn               string `json:"name_en" gorm:"type:varchar(40)"`
 	CompanyDigitCode12   string `json:"company_digit_code12"  gorm:"type:varchar(12)"`
@@ -16,4 +21,17 @@ type Stock struct {
 	IndustrySubgroupCode int    `json:"industry_subgroup_code"`
 	IndustryGroupName    string `json:"industry_group_name"  gorm:"type:varchar(40)"`
 	IndustrySubgroupName string `json:"industry_subgroup_name"  gorm:"type:varchar(40)"`
+	TotalStockNumber     int64
+	MonthAverage         int64
+	EPS                  int
+	PE                   float32
+	BaseVolume           int
+}
+
+func (model Stock) DB() *gorm.DB {
+	db, err := database.GetDatabaseConnection()
+	if err != nil {
+		log.Println(err)
+	}
+	return db
 }

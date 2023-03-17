@@ -15,7 +15,7 @@ type InputData struct {
 	Status    int
 	DataType  int
 	CreatedAt time.Time
-	VerifyAt  time.Time
+	UpdatedAt time.Time
 }
 
 func (model InputData) DB() *gorm.DB {

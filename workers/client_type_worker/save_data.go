@@ -3,7 +3,6 @@ package client_type_worker
 import (
 	"encoding/json"
 	"stock/models"
-	"time"
 )
 
 func SaveClientTypes(noInput ...interface{}) {
@@ -22,7 +21,6 @@ func SaveClientTypes(noInput ...interface{}) {
 		_ = json.Unmarshal(clientTypeItem.Data, &data)
 		data.CreatedAt = clientTypeItem.CreatedAt
 		clientTypeItem.Status = 2
-		clientTypeItem.VerifyAt = time.Now()
 
 		for i, lastClientType := range lastClientTypeInDb {
 			if data.StockId == lastClientType.StockId {
