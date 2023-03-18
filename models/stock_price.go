@@ -31,3 +31,18 @@ func (model StockPrices) DB() *gorm.DB {
 	}
 	return db
 }
+
+func (model StockPrices) LastPriceOfStock() []StockPrices {
+	query := "with prices as (select *, row_number() over (PARTITION BY stock_id order by transaction_at desc ) as row_number" +
+		"                from stock_prices" +
+		"                where transaction_at::date = current_date)" +
+		" select *" +
+		" from prices" +
+		" where row_number = 1"
+	var stockPrices []StockPrices
+	err := model.DB().Raw(query).Scan(&stockPrices)
+	if err != nil {
+		log.Println(err)
+	}
+	return stockPrices
+}

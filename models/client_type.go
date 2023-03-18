@@ -18,6 +18,7 @@ type ClientType struct {
 	VolumeOfRealInSell  int
 	VolumeOfLegalInSell int
 	VolumeOfLegalInBuy  int
+	StockLastPrice      int
 	CreatedAt           time.Time
 }
 
@@ -29,7 +30,7 @@ func (model ClientType) DB() *gorm.DB {
 	return db
 }
 
-func (model ClientType) LastRecordOfRecord() []ClientType {
+func (model ClientType) LastRecordOfClientType() []ClientType {
 	query := "WITH ranked_messages AS (" +
 		"    SELECT m.*, ROW_NUMBER() OVER (PARTITION BY stock_id ORDER BY created_at DESC) AS rn" +
 		"    FROM client_types AS m" +

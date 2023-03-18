@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"stock/services/database"
+	"time"
 )
 
 type Stock struct {
@@ -26,6 +27,7 @@ type Stock struct {
 	EPS                  int
 	PE                   float32
 	BaseVolume           int
+	CreatedAT            time.Time
 }
 
 func (model Stock) DB() *gorm.DB {

@@ -13,61 +13,88 @@ func SaveMarketWatchData(noInput ...interface{}) {
 	var newStocks []models.Stock
 	var stocksInDb []models.Stock
 	models.Stock{}.DB().Find(&stocksInDb)
+	var pricesIdDB = models.StockPrices{}.LastPriceOfStock()
 
 	for stockId, data := range marketWatchData {
+		// save stock info
+		addStock(&newStocks, stocksInDb, data, cast.ToUint(stockId))
+
 		// save stock price
-		prices = append(prices, models.StockPrices{
-			StockId:           cast.ToUint(stockId),
-			PriceMin:          data.StockPrices.PriceMin,
-			PriceMax:          data.StockPrices.PriceMax,
-			PriceYesterday:    data.StockPrices.PriceYesterday,
-			PriceFirst:        data.StockPrices.PriceFirst,
-			PriceClose:        data.StockPrices.PriceClose,
-			PriceLast:         data.StockPrices.PriceLast,
-			TransactionCount:  data.StockPrices.TransactionCount,
-			TransactionVolume: data.StockPrices.TransactionVolume,
-			TransactionValue:  data.StockPrices.TransactionValue,
-			TransactionAt:     data.StockPrices.Time,
-		})
+		addPrices(&prices, &pricesIdDB, data, cast.ToUint(stockId))
 
 		//save orders
-		saveOrders(&orders, data, cast.ToUint(stockId))
-
-		// save stock info
-		if stockIsNew(cast.ToUint(stockId), stocksInDb) {
-			newStocks = append(newStocks, models.Stock{
-				ID:                cast.ToUint(stockId),
-				NameFa:            data.StockInfo.NameFa,
-				SymbolDigitCode12: data.StockInfo.SymbolDigitCode12,
-				SymbolName:        data.StockInfo.SymbolName,
-				IndustryGroupCode: cast.ToInt(data.StockInfo.IndustryGroupCode),
-				TotalStockNumber:  data.StockInfo.TotalStockNumber,
-				MonthAverage:      data.StockInfo.MonthAverage,
-				EPS:               data.StockInfo.EPS,
-				PE:                data.StockInfo.PE,
-				BaseVolume:        data.StockInfo.BaseVolume,
-			})
-		}
+		addOrders(&orders, data, cast.ToUint(stockId))
 
 	}
-	//todo update stock info
-	if len(newStocks) != 0 {
-		models.Stock{}.DB().Create(&newStocks)
-	}
-	models.StockPrices{}.DB().Create(&prices)
-	models.OrderItems{}.DB().Create(&orders)
+	//if len(newStocks) != 0 {
+	//	models.Stock{}.DB().Create(&newStocks)
+	//}
+	//if len(prices) != 0 {
+	//	models.StockPrices{}.DB().Create(&prices)
+	//}
+	//if len(orders) != 0 {
+	//	models.OrderItems{}.DB().Create(&orders)
+	//}
+
 }
 
-func stockIsNew(stockId uint, stocksInDb []models.Stock) bool {
+func addPrices(prices *[]models.StockPrices, pricesIdDB *[]models.StockPrices,
+	data market_watch.MarketWatchModel, stockId uint) {
+	isNew := false
+	for _, lastPrice := range *pricesIdDB {
+		if lastPrice.StockId == stockId {
+			if data.StockPrices.Time.After(lastPrice.TransactionAt) {
+				isNew = true
+			}
+			break
+		}
+	}
+	if !isNew {
+		return
+	}
+	priceModel := models.StockPrices{
+		StockId:           cast.ToUint(stockId),
+		PriceMin:          data.StockPrices.PriceMin,
+		PriceMax:          data.StockPrices.PriceMax,
+		PriceYesterday:    data.StockPrices.PriceYesterday,
+		PriceFirst:        data.StockPrices.PriceFirst,
+		PriceClose:        data.StockPrices.PriceClose,
+		PriceLast:         data.StockPrices.PriceLast,
+		TransactionCount:  data.StockPrices.TransactionCount,
+		TransactionVolume: data.StockPrices.TransactionVolume,
+		TransactionValue:  data.StockPrices.TransactionValue,
+		TransactionAt:     data.StockPrices.Time,
+	}
+	*prices = append(*prices, priceModel)
+	*pricesIdDB = append(*pricesIdDB, priceModel)
+}
+
+func addStock(stocks *[]models.Stock, stocksInDb []models.Stock, data market_watch.MarketWatchModel, stockId uint) {
+	isNew := true
 	for _, stock := range stocksInDb {
 		if stock.ID == stockId {
-			return false
+			isNew = false
+			break
 		}
 	}
-	return true
+	if !isNew {
+		return
+	}
+	*stocks = append(*stocks, models.Stock{
+		ID:                cast.ToUint(stockId),
+		NameFa:            data.StockInfo.NameFa,
+		SymbolDigitCode12: data.StockInfo.SymbolDigitCode12,
+		SymbolName:        data.StockInfo.SymbolName,
+		IndustryGroupCode: cast.ToInt(data.StockInfo.IndustryGroupCode),
+		TotalStockNumber:  data.StockInfo.TotalStockNumber,
+		MonthAverage:      data.StockInfo.MonthAverage,
+		EPS:               data.StockInfo.EPS,
+		PE:                data.StockInfo.PE,
+		BaseVolume:        data.StockInfo.BaseVolume,
+	})
 }
 
-func saveOrders(orders *[]models.OrderItems, data market_watch.MarketWatchModel, stockId uint) {
+func addOrders(orders *[]models.OrderItems, data market_watch.MarketWatchModel, stockId uint) {
 	*orders = append(*orders, models.OrderItems{
 		StockId:              stockId,
 		RowNumber:            1,

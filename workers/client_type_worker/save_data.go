@@ -2,7 +2,9 @@ package client_type_worker
 
 import (
 	"encoding/json"
+	"github.com/spf13/cast"
 	"stock/models"
+	"stock/stock_info_tse/market_watch"
 )
 
 func SaveClientTypes(noInput ...interface{}) {
@@ -12,7 +14,7 @@ func SaveClientTypes(noInput ...interface{}) {
 		return
 	}
 
-	lastClientTypeInDb := models.ClientType{}.LastRecordOfRecord()
+	lastClientTypeInDb := models.ClientType{}.LastRecordOfClientType()
 	var clientTypeToSave []models.ClientType
 
 	for _, clientTypeItem := range clientTypesData {
@@ -20,6 +22,7 @@ func SaveClientTypes(noInput ...interface{}) {
 		data := models.ClientType{}
 		_ = json.Unmarshal(clientTypeItem.Data, &data)
 		data.CreatedAt = clientTypeItem.CreatedAt
+		data.StockLastPrice = market_watch.FindStockInMarketWatch(cast.ToString(data.StockId)).StockPrices.PriceLast
 		clientTypeItem.Status = 2
 
 		for i, lastClientType := range lastClientTypeInDb {
