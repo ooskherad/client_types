@@ -54,7 +54,7 @@ func SaveMarketWatchData(noInput ...interface{}) {
 	if len(newStocks) != 0 {
 		models.Stock{}.DB().Create(&newStocks)
 	}
-	//models.StockPrices{}.DB().Create(&prices)
+	models.StockPrices{}.DB().Create(&prices)
 	models.OrderItems{}.DB().Create(&orders)
 }
 
