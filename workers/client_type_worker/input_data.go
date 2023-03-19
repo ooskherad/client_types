@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cast"
 	"stock/models"
 	"stock/stock_info_tse/client_types"
+	"stock/stock_info_tse/market_watch"
 )
 
 func SaveClientTypeInInputData(noInput ...interface{}) {
@@ -21,6 +22,7 @@ func SaveClientTypeInInputData(noInput ...interface{}) {
 		clientTypeModel["VolumeOfRealInSell"] = data.VolumeOfRealInSell
 		clientTypeModel["VolumeOfLegalInSell"] = data.VolumeOfLegalInSell
 		clientTypeModel["VolumeOfLegalInBuy"] = data.VolumeOfLegalInBuy
+		clientTypeModel["StockLastPrice"] = market_watch.FindStockInMarketWatch(stockId).StockPrices.PriceLast
 
 		inputDataData, _ := json.Marshal(clientTypeModel)
 		inputData = append(inputData, models.InputData{

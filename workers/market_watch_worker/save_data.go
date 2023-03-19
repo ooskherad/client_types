@@ -40,11 +40,11 @@ func SaveMarketWatchData(noInput ...interface{}) {
 
 func addPrices(prices *[]models.StockPrices, pricesIdDB *[]models.StockPrices,
 	data market_watch.MarketWatchModel, stockId uint) {
-	isNew := false
+	isNew := true
 	for _, lastPrice := range *pricesIdDB {
 		if lastPrice.StockId == stockId {
-			if data.StockPrices.Time.After(lastPrice.TransactionAt) {
-				isNew = true
+			if !data.StockPrices.Time.After(lastPrice.TransactionAt) {
+				isNew = false
 			}
 			break
 		}
