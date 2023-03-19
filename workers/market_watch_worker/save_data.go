@@ -26,15 +26,15 @@ func SaveMarketWatchData(noInput ...interface{}) {
 		addOrders(&orders, data, cast.ToUint(stockId))
 
 	}
-	//if len(newStocks) != 0 {
-	//	models.Stock{}.DB().Create(&newStocks)
-	//}
-	//if len(prices) != 0 {
-	//	models.StockPrices{}.DB().Create(&prices)
-	//}
-	//if len(orders) != 0 {
-	//	models.OrderItems{}.DB().Create(&orders)
-	//}
+	if len(newStocks) != 0 {
+		models.Stock{}.DB().Create(&newStocks)
+	}
+	if len(prices) != 0 {
+		models.StockPrices{}.DB().Create(&prices)
+	}
+	if len(orders) != 0 {
+		models.OrderItems{}.DB().Create(&orders)
+	}
 
 }
 
