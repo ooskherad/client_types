@@ -1,7 +1,7 @@
 package market_watch
 
 import (
-	"stock/services/http"
+	"stock/crawler/services/http"
 	"time"
 )
 

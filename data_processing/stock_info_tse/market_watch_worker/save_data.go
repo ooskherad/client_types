@@ -2,8 +2,8 @@ package market_watch_worker
 
 import (
 	"github.com/spf13/cast"
+	"stock/crawler/stock_info_tse/market_watch"
 	"stock/models"
-	"stock/stock_info_tse/market_watch"
 )
 
 func SaveMarketWatchData(noInput ...interface{}) {

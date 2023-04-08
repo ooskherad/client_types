@@ -3,6 +3,7 @@ module stock
 go 1.18
 
 require (
+	github.com/rabbitmq/amqp091-go v1.8.0
 	github.com/spf13/cast v1.5.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11

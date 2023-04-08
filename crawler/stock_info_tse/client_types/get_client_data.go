@@ -1,7 +1,7 @@
 package client_types
 
 import (
-	"stock/services/http"
+	"stock/crawler/services/http"
 )
 
 const (

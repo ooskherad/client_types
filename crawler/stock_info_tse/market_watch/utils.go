@@ -3,7 +3,7 @@ package market_watch
 import (
 	"github.com/spf13/cast"
 	"sort"
-	"stock/helper"
+	"stock/infrastructure/helper"
 	"strings"
 	"time"
 	"unicode/utf8"

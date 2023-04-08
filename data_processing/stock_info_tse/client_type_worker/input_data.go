@@ -3,9 +3,9 @@ package client_type_worker
 import (
 	"encoding/json"
 	"github.com/spf13/cast"
+	"stock/crawler/stock_info_tse/client_types"
+	"stock/crawler/stock_info_tse/market_watch"
 	"stock/models"
-	"stock/stock_info_tse/client_types"
-	"stock/stock_info_tse/market_watch"
 )
 
 func SaveClientTypeInInputData(noInput ...interface{}) {

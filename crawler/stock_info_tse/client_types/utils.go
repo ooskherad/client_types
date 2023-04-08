@@ -2,7 +2,7 @@ package client_types
 
 import (
 	"sort"
-	"stock/helper"
+	"stock/infrastructure/helper"
 	"strings"
 )
 

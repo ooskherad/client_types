@@ -1,0 +1,26 @@
+version: "3"
+services:
+  stock-service:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - main_network
+
+networks:
+  main_network:
+    driver: bridge
