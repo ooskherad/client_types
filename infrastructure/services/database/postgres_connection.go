@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 )
@@ -19,7 +20,7 @@ func init() {
 	user = "postgres"
 	password = "1234"
 	db = "postgres"
-	host = "192.168.1.9"
+	host = "192.168.1.2"
 	port = "1234"
 }
 
@@ -31,7 +32,10 @@ func CreateDBConnection() error {
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  GetDSN(),
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
-	}))
+	}),
+		&gorm.Config{
+			Logger: logger.Default.LogMode(logger.Silent),
+		})
 
 	if err != nil {
 		log.Println("Error occurred while connecting with the database")

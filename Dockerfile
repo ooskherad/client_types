@@ -7,7 +7,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN CGO_ENABLED=0 go build -o StockApp ./cmd/api
+RUN CGO_ENABLED=0 go build -o StockApp ./cmd
 
 RUN chmod +x /app/StockApp
 
@@ -18,4 +18,4 @@ RUN mkdir /app
 
 COPY --from=builder /app/StockApp /app
 
-CMD [ "/app/brokerApp" ]
+CMD [ "/app/StockApp" ]

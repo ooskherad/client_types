@@ -1,13 +1,17 @@
 package market_watch_worker
 
 import (
+	"encoding/json"
 	"github.com/spf13/cast"
-	"stock/crawler/stock_info_tse/market_watch"
 	"stock/models"
 )
 
 func SaveMarketWatchData(noInput ...interface{}) {
-	marketWatchData := market_watch.GetMarketWatch()
+	var inputData []models.InputData
+	models.InputData{}.DB().Where("status = ? and data_type = ?", 1, 12).Order("created_at").Find(&inputData)
+	if len(inputData) == 0 {
+		return
+	}
 	var prices []models.StockPrices
 	var orders []models.OrderItems
 	var newStocks []models.Stock
@@ -15,15 +19,19 @@ func SaveMarketWatchData(noInput ...interface{}) {
 	models.Stock{}.DB().Find(&stocksInDb)
 	var pricesIdDB = models.StockPrices{}.LastPriceOfStock()
 
-	for stockId, data := range marketWatchData {
+	for _, marketData := range inputData {
+		marketData.Status = 2
+		data := MarketWatchModel{}
+		_ = json.Unmarshal(marketData.Data, &data)
+
 		// save stock info
-		addStock(&newStocks, stocksInDb, data, cast.ToUint(stockId))
+		addStock(&newStocks, &stocksInDb, data, cast.ToUint(data.StockInfo.Identifier))
 
 		// save stock price
-		addPrices(&prices, &pricesIdDB, data, cast.ToUint(stockId))
+		addPrices(&prices, &pricesIdDB, data, cast.ToUint(data.StockInfo.Identifier))
 
 		//save orders
-		addOrders(&orders, data, cast.ToUint(stockId))
+		addOrders(&orders, data, cast.ToUint(data.StockInfo.Identifier))
 
 	}
 	if len(newStocks) != 0 {
@@ -35,11 +43,12 @@ func SaveMarketWatchData(noInput ...interface{}) {
 	if len(orders) != 0 {
 		models.OrderItems{}.DB().Create(&orders)
 	}
+	models.InputData{}.BulkUpdateVerifyStatus(inputData)
 
 }
 
 func addPrices(prices *[]models.StockPrices, pricesIdDB *[]models.StockPrices,
-	data market_watch.MarketWatchModel, stockId uint) {
+	data MarketWatchModel, stockId uint) {
 	isNew := true
 	for _, lastPrice := range *pricesIdDB {
 		if lastPrice.StockId == stockId {
@@ -69,9 +78,9 @@ func addPrices(prices *[]models.StockPrices, pricesIdDB *[]models.StockPrices,
 	*pricesIdDB = append(*pricesIdDB, priceModel)
 }
 
-func addStock(stocks *[]models.Stock, stocksInDb []models.Stock, data market_watch.MarketWatchModel, stockId uint) {
+func addStock(stocks *[]models.Stock, stocksInDb *[]models.Stock, data MarketWatchModel, stockId uint) {
 	isNew := true
-	for _, stock := range stocksInDb {
+	for _, stock := range *stocksInDb {
 		if stock.ID == stockId {
 			isNew = false
 			break
@@ -80,7 +89,7 @@ func addStock(stocks *[]models.Stock, stocksInDb []models.Stock, data market_wat
 	if !isNew {
 		return
 	}
-	*stocks = append(*stocks, models.Stock{
+	model := models.Stock{
 		ID:                cast.ToUint(stockId),
 		NameFa:            data.StockInfo.NameFa,
 		SymbolDigitCode12: data.StockInfo.SymbolDigitCode12,
@@ -91,10 +100,12 @@ func addStock(stocks *[]models.Stock, stocksInDb []models.Stock, data market_wat
 		EPS:               data.StockInfo.EPS,
 		PE:                data.StockInfo.PE,
 		BaseVolume:        data.StockInfo.BaseVolume,
-	})
+	}
+	*stocks = append(*stocks, model)
+	*stocksInDb = append(*stocksInDb, model)
 }
 
-func addOrders(orders *[]models.OrderItems, data market_watch.MarketWatchModel, stockId uint) {
+func addOrders(orders *[]models.OrderItems, data MarketWatchModel, stockId uint) {
 	*orders = append(*orders, models.OrderItems{
 		StockId:              stockId,
 		RowNumber:            1,
