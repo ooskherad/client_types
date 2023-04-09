@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"log"
+	"os"
 	"time"
 )
 
@@ -74,5 +75,6 @@ func Init() {
 	err := CreateDBConnection()
 	if err != nil {
 		log.Println(err.Error())
+		os.Exit(1)
 	}
 }

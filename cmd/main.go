@@ -12,10 +12,8 @@ import (
 )
 
 func main() {
-	err := database.CreateDBConnection()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	database.Init()
+
 	fmt.Println("connected to database")
 
 	con, err := database.GetDatabaseConnection()
