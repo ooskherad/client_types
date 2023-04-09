@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	fmt.Println("connected to database")
 
 	con, err := database.GetDatabaseConnection()
 	if err != nil {
@@ -26,8 +27,9 @@ func main() {
 		println(err.Error())
 	}
 	done := make(chan bool)
-	go helper.Job(helper.JobTime{H: 8, M: 59, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 3*time.Second, market_watch_worker.SaveMarketWatchData)
-	go helper.Job(helper.JobTime{H: 8, M: 59, S: 00}, helper.JobTime{H: 12, M: 31, S: 00}, 30*time.Second, client_type_worker.SaveClientTypes)
+	go helper.Job(helper.JobTime{H: 8, M: 59, S: 00}, helper.JobTime{H: 15, M: 00, S: 00}, 3*time.Second, market_watch_worker.SaveMarketWatchData)
+	go helper.Job(helper.JobTime{H: 8, M: 59, S: 00}, helper.JobTime{H: 15, M: 00, S: 00}, 30*time.Second, client_type_worker.SaveClientTypes)
+	fmt.Println("start running workers \t ctrl+c to break")
 	<-done
 
 }
