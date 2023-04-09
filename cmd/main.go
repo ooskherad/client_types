@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"stock/data_processing/stock_info_tse/client_type_worker"
-	"stock/data_processing/stock_info_tse/market_watch_worker"
-	"stock/infrastructure/helper"
-	"stock/infrastructure/services/database"
-	"stock/models"
+	"stock/pkg/data_processing/stock_info_tse/client_type_worker"
+	"stock/pkg/data_processing/stock_info_tse/market_watch_worker"
+	"stock/pkg/infrastructure/helper"
+	"stock/pkg/infrastructure/services/database"
+	"stock/pkg/models"
+
 	"time"
 )
 

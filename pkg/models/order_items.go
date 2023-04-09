@@ -3,7 +3,7 @@ package models
 import (
 	"gorm.io/gorm"
 	"log"
-	"stock/infrastructure/services/database"
+	"stock/pkg/infrastructure/services/database"
 	"time"
 )
 

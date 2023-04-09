@@ -3,8 +3,9 @@ package models
 import (
 	"gorm.io/gorm"
 	"log"
-	"stock/infrastructure/helper/data_types"
-	"stock/infrastructure/services/database"
+	"stock/pkg/infrastructure/helper/data_types"
+	"stock/pkg/infrastructure/services/database"
+
 	"time"
 )
 

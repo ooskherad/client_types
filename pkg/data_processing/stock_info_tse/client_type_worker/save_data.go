@@ -2,7 +2,7 @@ package client_type_worker
 
 import (
 	"encoding/json"
-	"stock/models"
+	"stock/pkg/models"
 )
 
 func SaveClientTypes(noInput ...interface{}) {

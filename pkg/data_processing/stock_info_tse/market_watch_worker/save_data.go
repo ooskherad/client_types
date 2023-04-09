@@ -3,7 +3,7 @@ package market_watch_worker
 import (
 	"encoding/json"
 	"github.com/spf13/cast"
-	"stock/models"
+	"stock/pkg/models"
 )
 
 func SaveMarketWatchData(noInput ...interface{}) {
